@@ -79,7 +79,7 @@
   ;;;;;;;;;;;;;;;;;
   ;; Upload
   (when (get 'bucket)
-    (parameterize ([current-directory working-dir])
+    (parameterize ([current-directory (get 'rip-dir)])
       (copy-music-to-b2 #:bucket (get 'bucket)
                         #:disc (get 'disc-name))))
 
