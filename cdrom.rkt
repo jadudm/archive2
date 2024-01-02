@@ -1,5 +1,7 @@
 #lang racket
 
+(require racket/file)
+
 (require "core.rkt"
          "par2.rkt"
          "split.rkt"
@@ -41,6 +43,7 @@
     (putenv "OUTPUTDIR" (format "~a" working-dir))
     ;; (define command (format "abcde -1 -N -B -o flac -Q musicbrainz,cddb -j 6 -p -a default,cue 1"))
     (define command (format "abcde -N -B -o mp3,flac -Q musicbrainz,cddb -j 6 -p"))
+    ;; mp3,flac
     (printf "command: ~a~n" command)
     (when (not (zero? (system/exit-code command)))
       (printf "abcde exited abnormally. Exiting.~n")
@@ -52,25 +55,26 @@
     (define dirs (directory-list (current-directory)))
     (for ([d dirs])
       (when (and (directory-exists? d)
-                 (not (regexp-match #px"abcde" d)))
+                 (not (regexp-match #px"abcde" (format "~a" d))))
         (put 'rip-dir (build-path (current-directory)
                                   d))
         (put 'disc-name
              (string-downcase
-              (regexp-replace* #px"[^a-zA-Z0-9-]" d ""))))))
+              (regexp-replace* #px"[^a-zA-Z0-9_-]" (format "~a" d) ""))))))
  
           
   ;;;;;;;;;;;;;;;;;
   ;; Copy to destination
   (when (get 'destination)
-      (define target-dir (build-path (get 'destination)
-                                     (get 'disc-name)))
+    (make-directory* (get 'destination))
+    (define target-dir (build-path (get 'destination)
+                                   (get 'disc-name)))
+    (mkdir target-dir)
+    (printf "Destination target directory: ~a~n" target-dir)
+    (when (directory-exists? target-dir)
+      (delete-directory/files target-dir))
     
-      ;; (printf "Destination target directory: ~a~n" target-dir)
-      (when (directory-exists? target-dir)
-        (delete-directory/files target-dir))
-    
-      (archive-copy working-dir target-dir))
+    (archive-copy (get 'rip-dir) target-dir))
 
   ;;;;;;;;;;;;;;;;;
   ;; Upload

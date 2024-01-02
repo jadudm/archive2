@@ -48,9 +48,6 @@
    [("--split-size") SPLIT-SIZE
                      ((format "Size of splits in MB/GB; default is ~a" (get 'split-size)))
                      (put 'split-size SPLIT-SIZE)]
-   [("--archive-name") ARCHIVE-NAME
-                       ((format "Name of the archive; defaults to YYYY-MM-DD-archive"))
-                       (put 'archive-name ARCHIVE-NAME)]
    [("--bucket") BUCKET
                  ((format "Name of the B2 bucket to sync to"))
                  (put 'bucket BUCKET)]
