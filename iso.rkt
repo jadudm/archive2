@@ -24,22 +24,7 @@
   ;; Create the working directory
   (printf "Working directory is: ~a~n" working-dir)
   (mkdir working-dir)
-  
-  ;;;;;;;;;;;;;;
-  ;; dd the image first
-  (when (get 'dd-path)
-    (parameterize ([current-directory working-dir])
-      (define command (format "dd if=~a of=~a status=progress"
-                              (get 'dd-path)
-                              (file-name-from-path (get 'iso-path))
-                              ))
-      (printf "command: ~a~n" command)
-      (when (not (zero? (system/exit-code command)))
-        (printf "dd failed. Exiting.~n")
-        (exit -1))
-      (put 'iso-path (build-path (get 'temp)
-                                 (file-name-from-path (get 'iso-path))))
-      ))
+
   
   ;; Clean out the working directory
   (parameterize ([current-directory working-dir])
@@ -54,7 +39,23 @@
          (printf "Cleaning up ~a~n" file)
          (delete-file file)]
         )))
-
+  
+  ;;;;;;;;;;;;;;
+  ;; dd the image first
+  (when (get 'dd-path)
+    (parameterize ([current-directory working-dir])
+      (define command (format "dd if=~a of=~a status=progress"
+                              (get 'dd-path)
+                              (file-name-from-path (get 'iso-path))
+                              ))
+      (printf "command: ~a~n" command)
+      (when (not (zero? (system/exit-code command)))
+        (printf "WARNING dd exited abnormally.~n")
+        )
+      (put 'iso-path (build-path (get 'temp)
+                                 (file-name-from-path (get 'iso-path))))
+      ))
+  
   ;; If we dd'd the image, we have no desire to copy it.
   ;; It was already put in the correct place.
   (when (not (get 'dd-path))

@@ -13,7 +13,7 @@
 (define NOVALUE 'NOVALUE)
 (define (get key)
   (define result (hash-ref config key NOVALUE))
-  ;; (printf "- getting ~a: ~s~n" key result)
+  (printf "- getting ~a: ~s~n" key result)
   result
   )
 (define (put key value)

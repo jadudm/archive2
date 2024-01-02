@@ -3,15 +3,17 @@
 
 (require "core.rkt"
          "iso.rkt"
+         "cdrom.rkt"
          )
 
 (define (main)
   (match (get 'archive-type)
     ['NOVALUE (printf "Exiting.~n")]
     ['iso
-     (archive-iso)
+     (archive-iso)]
+    ['disc
+     (archive-cdrom)
      ]
-    ['disc 'pass]
     ['dir 'pass]
     ))
 
@@ -25,10 +27,9 @@
               "For archiving ISOs"
               (put 'archive-type 'iso)
               (put 'iso-path  ISO-PATH)]
-   [("--disc") DISC-PATH
-               "Path to the disc (/dev/cdrom)"
-               (put 'archive-type 'disc)
-               (put 'disc-path DISC-PATH)]
+   [("--disc") 
+               "Path to the disc (/dev/sr0)"
+               (put 'archive-type 'disc)]
    [("--dir") DIR-PATH
               "Directory to tar and archive"
               (put 'archive-type 'dir)
