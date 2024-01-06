@@ -1,5 +1,7 @@
 #lang racket
+
 (require racket/path)
+(require racket/runtime-path)
 
 (require "core.rkt"
          "iso.rkt"
@@ -41,7 +43,8 @@
    [("--dir") DIR-PATH
               "Directory to tar and archive"
               (put 'archive-type 'dir)
-              (put 'dir-path DIR-PATH)]
+              (put 'dir-path DIR-PATH)
+              ]
 
    #:once-each
    [("--dry-run") 
@@ -56,6 +59,9 @@
    [("--split-size") SPLIT-SIZE
                      ((format "Size of splits in MB/GB; default is ~a" (get 'split-size)))
                      (put 'split-size SPLIT-SIZE)]
+   [("--gzip")
+    "Compress. (Only used when doing a directory archive.)"
+    (put 'gzip true)]
    [("--bucket") BUCKET
                  ((format "Name of the B2 bucket to sync to"))
                  (put 'bucket BUCKET)]

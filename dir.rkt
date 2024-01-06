@@ -45,20 +45,31 @@
   ;;;;;;;;;;;;;;
   ;; tar the directory first
   (when (get 'dir-path)
+    
+    (define exploded (explode-path (get 'dir-path)))
+    (put 'dest-tar-file (format "~a/~a.tar"
+                                working-dir
+                                (first (reverse exploded))))
+    
+    (define command (format "tar cvf ~a ~a"
+                            (get 'dest-tar-file)
+                            (get 'dir-path)
+                            ))
+    (printf "command: ~a~n" command)
+    (when (not (zero? (system/exit-code command)))
+      (printf "WARNING tar exited abnormally.~n")
+      (exit -1)
+      )
+
     (parameterize ([current-directory working-dir])
-      (define exploded (explode-path (get 'dir-path)))
-      (put 'dest-tar-file (format "~a~a.tar"
-                                  (current-directory)
-                                  (first (reverse exploded))))
-      
-      (define command (format "tar cvf ~a ~a"
-                              (get 'dest-tar-file)
-                              (get 'dir-path)
-                              ))
-      (printf "command: ~a~n" command)
-      (when (not (zero? (system/exit-code command)))
-        (printf "WARNING tar exited abnormally.~n")
-        )
+      (when (get 'gzip)
+        (define command (format "gzip ~a" (get 'dest-tar-file)))
+        (printf "command: ~a~n" command)
+        (when (not (zero? (system/exit-code command)))
+          (printf "WARNING gzip exited abnormally.~n")
+          (exit -1)
+          )
+        (put 'dest-tar-file (format "~a.gz" (get 'dest-tar-file))))
       ))
   
   ;;;;;;;;;;;;;;;;;
