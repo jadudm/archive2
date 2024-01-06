@@ -4,17 +4,25 @@
 (require "core.rkt"
          "iso.rkt"
          "cdrom.rkt"
+         "dir.rkt"
          )
 
 (define (main)
-  (match (get 'archive-type)
-    ['NOVALUE (printf "Exiting.~n")]
-    ['iso
-     (archive-iso)]
-    ['disc
-     (archive-cdrom)
-     ]
-    ['dir 'pass]
+  (with-handlers ([exn? (lambda (e)
+                          (when (directory-exists? (get 'temp))
+                            (delete-directory/files (get 'temp))))])
+    (match (get 'archive-type)
+      ['NOVALUE (printf "Exiting.~n")]
+      ['iso
+       (archive-iso)]
+      ['disc
+       (archive-cdrom)
+       ]
+      ['dir (archive-dir)]
+      )
+    ;; Remove the tempdir when we're done
+    (when (directory-exists? (get 'temp))
+      (delete-directory/files (get 'temp)))
     ))
 
 (define (parser)
@@ -28,8 +36,8 @@
               (put 'archive-type 'iso)
               (put 'iso-path  ISO-PATH)]
    [("--disc") 
-               "Path to the disc (/dev/sr0)"
-               (put 'archive-type 'disc)]
+    "Path to the disc (/dev/sr0)"
+    (put 'archive-type 'disc)]
    [("--dir") DIR-PATH
               "Directory to tar and archive"
               (put 'archive-type 'dir)
@@ -59,7 +67,8 @@
                       (put 'destination DESTINATION)]
    
    #:args ()
-   (main)))
+   (main)
+   ))
 
 (parser)
 

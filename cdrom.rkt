@@ -42,7 +42,7 @@
   (parameterize ([current-directory working-dir])
     (putenv "OUTPUTDIR" (format "~a" working-dir))
     ;; (define command (format "abcde -1 -N -B -o flac -Q musicbrainz,cddb -j 6 -p -a default,cue 1"))
-    (define command (format "abcde -N -B -o mp3,flac -Q musicbrainz,cddb -j 6 -p"))
+    (define command (format "abcde -N -B -o mp3,flac -Q musicbrainz,cddb -j 6 -p -x"))
     ;; mp3,flac
     (printf "command: ~a~n" command)
     (when (not (zero? (system/exit-code command)))
@@ -72,7 +72,7 @@
     (mkdir target-dir)
     (printf "Destination target directory: ~a~n" target-dir)
     (when (directory-exists? target-dir)
-      (delete-directory/files target-dir))
+        (delete-directory/files target-dir))
     
     (archive-copy (get 'rip-dir) target-dir))
 
@@ -83,6 +83,4 @@
       (copy-music-to-b2 #:bucket (get 'bucket)
                         #:disc (get 'disc-name))))
 
-  ;; Remove the tempdir when we're done`
-  (delete-directory/files (get 'temp))
   )
